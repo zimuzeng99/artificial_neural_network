@@ -64,7 +64,7 @@ class NeuralNetwork:
         error = [0] * (len(self.layers) - 1)
 
         # Calculate error for output layer
-        error[-1] = target - self.layers[-1]
+        error[-1] = (target - self.layers[-1])
 
         # Calculate error for hidden layers
         for i in range(len(error) - 2, -1, -1):
@@ -83,18 +83,30 @@ class NeuralNetwork:
 
         return delta_weights, delta_biases
 
-    # Trains over the supplied data set for one iteration
+    # Makes one pass over the training set and performs stochastic gradient descent
     def train(self, training_set, training_labels):
+        """
         # Accumulators for the changes in weights and biases for each data in the
         # training set. These values will be divided by the size of the training set
         # to calculate the actual values that will be applied to the weights and biases
         # at the end of one training iteration.
-        delta_weights = [0] * len(self.weights)
-        delta_biases = [0] * len(self.biases)
+        delta_weights = []
+        for i in range(0, len(self.weights)):
+            delta_weights.append(np.zeros(self.weights[i].shape))
+        delta_biases = []
 
+        for i in range(0, len(self.biases)):
+            delta_biases.append(np.zeros(self.biases[i].shape))
+"""
         for i in range(0, len(training_set)):
             self.compute(training_set[i])
+            #dw, db = self.backprop(training_labels[i])
             dw, db = self.backprop(training_labels[i])
+
+            for j in range(0, len(self.weights)):
+                self.weights[j] += self.learning_rate * dw[j]
+                self.biases[j] += self.learning_rate * db[j]
+                """
 
             # Backpropagation has calculated delta values for this piece of data.
             # Now we add this to the accumulator.
@@ -107,7 +119,9 @@ class NeuralNetwork:
             delta_weights[i] = delta_weights[i] / len(training_set)
             delta_biases[i] = delta_biases[i] / len(training_set)
 
+
         # Applies the changes to the weights and biases
         for i in range(0, len(self.weights)):
             self.weights[i] += self.learning_rate * delta_weights[i]
             self.biases[i] += self.learning_rate * delta_biases[i]
+"""

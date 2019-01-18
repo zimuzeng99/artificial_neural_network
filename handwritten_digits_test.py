@@ -1,6 +1,7 @@
 from mnist import MNIST
 import random
 import neural_network
+import numpy as np
 
 # Converts a digit label to a probability vector. E.g. 5 would convert to
 # [0, 0, 0, 0, 0, 1, 0, 0, 0, 0]
@@ -42,27 +43,46 @@ print(mndata.display(training_images[index]))
 print(training_labels[index])
 """
 
-nn = neural_network.NeuralNetwork([image_width * image_height, 16, 16, 10], 0.2)
+nn = neural_network.NeuralNetwork([image_width * image_height, 200, 80, 10], 0.2)
 
-training_size = 1000
+training_size = 10000
 
 # Normalizes the training set to improve learning effectiveness
 for i in range(0, training_size):
     training_images[i] = normalize(training_images[i])
 
-
-
-for i in range(0, 10):
-    nn.train(training_images[ : training_size], training_labels[ : training_size])
-    print(nn.calculate_cost(training_images[ : training_size], training_images[ : training_size]))
-
-
-test_size = 2000
+test_size = 3000
 
 # Normalizes the entire test set to improve learning effectiveness
 for i in range(0, test_size):
     test_images[i] = normalize(test_images[i])
-"""
+
+num_iterations = 0
+cost = nn.calculate_cost(training_images[ : training_size], training_images[ : training_size])
+while num_iterations < 10:
+    nn.train(training_images[ : training_size], training_labels[ : training_size])
+    num_iterations += 1
+    new_cost = nn.calculate_cost(training_images[ : training_size], training_images[ : training_size])
+    cost = new_cost
+
+print("Training cost: " + str(cost))
+
+num_correct = 0
+
+for i in range(0, training_size):
+    # The output will be a vector of probabilities. We use the largest value
+    # in this vector to determine the digit that the NN recognized.
+    output = nn.compute(training_images[i])
+    digit = output.index(max(output))
+
+    # If the NN predicted the correct digit
+    if digit == training_labels[i].index(1):
+        num_correct += 1
+
+accuracy = num_correct / training_size
+
+print("Training acurracy: " + str(accuracy))
+
 num_correct = 0
 
 for i in range(0, test_size):
@@ -76,5 +96,15 @@ for i in range(0, test_size):
         num_correct += 1
 
 accuracy = num_correct / test_size
-print("Accuracy: " + str(accuracy))
-"""
+print("Num training sessions: " + str(num_iterations))
+print("Test accuracy: " + str(accuracy))
+test_cost = nn.calculate_cost(test_images[ : test_size], test_images[ : test_size])
+print("Test cost: " + str(test_cost))
+
+np.save("weights0", nn.weights[0])
+np.save("weights1", nn.weights[1])
+np.save("weights2", nn.weights[2])
+
+np.save("biases0", nn.biases[0])
+np.save("biases1", nn.biases[1])
+np.save("biases2", nn.biases[2])
