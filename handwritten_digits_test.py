@@ -45,13 +45,13 @@ print(training_labels[index])
 
 nn = neural_network.NeuralNetwork([image_width * image_height, 200, 80, 10], 0.2)
 
-training_size = 10000
+training_size = 5000
 
 # Normalizes the training set to improve learning effectiveness
 for i in range(0, training_size):
     training_images[i] = normalize(training_images[i])
 
-test_size = 3000
+test_size = 10000
 
 # Normalizes the entire test set to improve learning effectiveness
 for i in range(0, test_size):
@@ -60,12 +60,9 @@ for i in range(0, test_size):
 num_iterations = 0
 cost = nn.calculate_cost(training_images[ : training_size], training_images[ : training_size])
 while num_iterations < 10:
-    nn.train(training_images[ : training_size], training_labels[ : training_size])
+    for i in range(0, training_size):
+        nn.train(training_images[i], training_labels[i])
     num_iterations += 1
-    new_cost = nn.calculate_cost(training_images[ : training_size], training_images[ : training_size])
-    cost = new_cost
-
-print("Training cost: " + str(cost))
 
 num_correct = 0
 
@@ -96,10 +93,7 @@ for i in range(0, test_size):
         num_correct += 1
 
 accuracy = num_correct / test_size
-print("Num training sessions: " + str(num_iterations))
 print("Test accuracy: " + str(accuracy))
-test_cost = nn.calculate_cost(test_images[ : test_size], test_images[ : test_size])
-print("Test cost: " + str(test_cost))
 
 np.save("weights0", nn.weights[0])
 np.save("weights1", nn.weights[1])
