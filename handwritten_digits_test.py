@@ -43,9 +43,9 @@ print(mndata.display(training_images[index]))
 print(training_labels[index])
 """
 
-nn = neural_network.NeuralNetwork([image_width * image_height, 200, 80, 10], 0.2)
+nn = neural_network.NeuralNetwork([image_width * image_height, 256, 128, 10], 0.2)
 
-training_size = 5000
+training_size = 30000
 
 # Normalizes the training set to improve learning effectiveness
 for i in range(0, training_size):
